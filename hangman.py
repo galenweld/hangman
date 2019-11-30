@@ -57,7 +57,7 @@ class Game:
 
 		letters = ""
 		for char in self.wrong_guesses(): letters += char
-		return status + "\n" + letters + "\nGuesses left: " + str(self.guesses_remain)
+		return status + "\n" + letters + "\nWrong guesses left: " + str(self.guesses_remain)
 
 	def wrong_guesses(self):
 		wrong = []
