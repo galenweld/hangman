@@ -1,4 +1,5 @@
 import random
+from noose import Noose
 
 def build_word_list(filename):
     """Returns a list of words from the given file
@@ -15,10 +16,9 @@ def build_word_list(filename):
     assert type(filename) == str, 'filename is not a string'
 
     accumulator = []
-    words = open(filename)
-    for line in words: accumulator.append(line.strip())
-    # Using strip here has defined by textbook (pg 98)
-    words.close()
+    with open(filename) as words:
+	    for line in words: accumulator.append(line.strip().lower())
+	    # Using strip here as defined by textbook (pg 98)
     return accumulator
 
 word_list = build_word_list('words.txt')
@@ -37,25 +37,23 @@ def word_list_by_size(words, size):
     assert type(words) == list, 'words is not a list'
     assert type(size) == int, 'size is not an int'
     assert size > 0, 'size is not positive'
-    
-    accumulator = []
-    for line in words:
-        if len(line) == size: accumulator.append(line)
-    return accumulator
+
+    return filter(lambda x: len(x)==size, words)
 
 class Game:
-	def __init__(self, lives):
+	def __init__(self, lives=6):
 		self.guesses_remain = lives
-		self.won = False
-		self.lost = False
-		self.word = random.choice(word_list)
+		self.won     = False
+		self.lost    = False
+		self.word    = random.choice(word_list)
 		self.guesses = []
+		self.noose  = Noose()
 
 	def __str__(self):
-		status = ""
+		status = str(self.noose)+2*'\n'
 		for char in self.word:
-			if char in self.guesses: status += char
-			else: status += "_"
+			if char in self.guesses: status += char + " "
+			else: status += "_" + " " 
 
 		letters = ""
 		for char in self.wrong_guesses(): letters += char
@@ -77,6 +75,8 @@ class Game:
 		self.guesses.append(char)
 		if char not in self.word: self.guesses_remain -= 1
 
+		self.noose.set_state( 6 - self.guesses_remain )
+
 	def game_over(self):
 		if self.guesses_remain <= 0:
 			self.lost = True
@@ -89,12 +89,13 @@ class Game:
 
 		return True
 
-def clear_screen():
-	for i in range(24): print "\n"
+def clear_screen(lines=5):
+	print lines*"\n"
 
 def play():
-	game = Game(10)
+	game = Game()
 
+	clear_screen()
 	print game
 
 	while not game.game_over():

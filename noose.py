@@ -9,11 +9,20 @@ class Noose(object):
 		self._state = 0
 		self.load_ascii()
 
+
 	def inc(self):
 		''' increase the number of limbs '''
 		assert self._state < 6, 'Hangman is already fully hung.'
 		self._state += 1
 		self.load_ascii()
+
+
+	def set_state(self, state):
+		''' set state to int 0<= state <=6 '''
+		assert int(state) <= 6 and int(state) >=0, "Invalid state"
+		self._state = int(state)
+		self.load_ascii()
+
 
 	def __str__(self):
 		return self._ascii
